@@ -108,7 +108,12 @@ subscriptions model =
 
 view model =
     Browser.Document
-        ("(" ++ formatSeconds model.secondsRemaining ++ ")")
+        ("("
+            ++ formatSeconds model.secondsRemaining
+            ++ ") "
+            ++ periodToString model.period
+            ++ " | Elm Pomodoro"
+        )
         [ Html.div
             []
             [ Html.div []
@@ -119,7 +124,7 @@ view model =
                         , Events.onClick (SwitchPeriod Pomodoro)
                         ]
                         []
-                    , Html.text "Pomodoro"
+                    , Html.text (periodToString Pomodoro)
                     ]
                 , Html.label []
                     [ Html.input
@@ -128,7 +133,7 @@ view model =
                         , Events.onClick (SwitchPeriod ShortBreak)
                         ]
                         []
-                    , Html.text "Short Break"
+                    , Html.text (periodToString ShortBreak)
                     ]
                 , Html.label []
                     [ Html.input
@@ -137,7 +142,7 @@ view model =
                         , Events.onClick (SwitchPeriod LongBreak)
                         ]
                         []
-                    , Html.text "Long Break"
+                    , Html.text (periodToString LongBreak)
                     ]
                 ]
             , Html.text <| formatSeconds model.secondsRemaining
@@ -154,3 +159,15 @@ formatSeconds seconds =
     (String.padLeft 2 '0' <| String.fromInt <| seconds // 60)
         ++ ":"
         ++ (String.padLeft 2 '0' <| String.fromInt <| remainderBy 60 seconds)
+
+
+periodToString period =
+    case period of
+        Pomodoro ->
+            "Pomodoro"
+
+        ShortBreak ->
+            "Short Break"
+
+        LongBreak ->
+            "Long Break"
