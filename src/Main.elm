@@ -139,7 +139,7 @@ view model =
             ]
         , Html.text <| formatSeconds model.secondsRemaining
         , Html.div []
-            [ Html.button [ Events.onClick (Running True) ] [ Html.text "Start" ]
+            [ Html.button [ Events.onClick (Running True), Attrs.disabled model.running ] [ Html.text "Start" ]
             , Html.button [ Events.onClick (Running False) ] [ Html.text "Stop" ]
             , Html.button [ Events.onClick Reset ] [ Html.text "Reset" ]
             ]
