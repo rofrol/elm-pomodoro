@@ -63,7 +63,15 @@ init _ =
 update msg model =
     case msg of
         Tick _ ->
-            ( { model | secondsRemaining = model.secondsRemaining - 1 }, Cmd.none )
+            let
+                model_ =
+                    if model.secondsRemaining == 0 then
+                        { model | running = False }
+
+                    else
+                        { model | secondsRemaining = model.secondsRemaining - 1 }
+            in
+            ( model_, Cmd.none )
 
         Zone zone ->
             ( { model | zone = zone }, Cmd.none )
