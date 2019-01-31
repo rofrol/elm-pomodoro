@@ -9,3 +9,10 @@ Install elm, run `elm reactor`.
 ## Radio button
 
 - https://stackoverflow.com/questions/45925255/having-radio-buttons-reflect-the-model
+
+## title
+
+use `Browser.document`
+
+- https://guide.elm-lang.org/webapps/
+- https://package.elm-lang.org/packages/elm/browser/latest/Browser#document

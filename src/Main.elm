@@ -9,7 +9,7 @@ import Time exposing (Posix)
 
 
 main =
-    Browser.element
+    Browser.document
         { init = init
         , update = update
         , subscriptions = subscriptions
@@ -107,41 +107,45 @@ subscriptions model =
 
 
 view model =
-    Html.div []
-        [ Html.div []
-            [ Html.label []
-                [ Html.input
-                    [ Attrs.type_ "radio"
-                    , Attrs.checked (model.period == Pomodoro)
-                    , Events.onClick (SwitchPeriod Pomodoro)
+    Browser.Document
+        ("(" ++ formatSeconds model.secondsRemaining ++ ")")
+        [ Html.div
+            []
+            [ Html.div []
+                [ Html.label []
+                    [ Html.input
+                        [ Attrs.type_ "radio"
+                        , Attrs.checked (model.period == Pomodoro)
+                        , Events.onClick (SwitchPeriod Pomodoro)
+                        ]
+                        []
+                    , Html.text "Pomodoro"
                     ]
-                    []
-                , Html.text "Pomodoro"
-                ]
-            , Html.label []
-                [ Html.input
-                    [ Attrs.type_ "radio"
-                    , Attrs.checked (model.period == ShortBreak)
-                    , Events.onClick (SwitchPeriod ShortBreak)
+                , Html.label []
+                    [ Html.input
+                        [ Attrs.type_ "radio"
+                        , Attrs.checked (model.period == ShortBreak)
+                        , Events.onClick (SwitchPeriod ShortBreak)
+                        ]
+                        []
+                    , Html.text "Short Break"
                     ]
-                    []
-                , Html.text "Short Break"
-                ]
-            , Html.label []
-                [ Html.input
-                    [ Attrs.type_ "radio"
-                    , Attrs.checked (model.period == LongBreak)
-                    , Events.onClick (SwitchPeriod LongBreak)
+                , Html.label []
+                    [ Html.input
+                        [ Attrs.type_ "radio"
+                        , Attrs.checked (model.period == LongBreak)
+                        , Events.onClick (SwitchPeriod LongBreak)
+                        ]
+                        []
+                    , Html.text "Long Break"
                     ]
-                    []
-                , Html.text "Long Break"
                 ]
-            ]
-        , Html.text <| formatSeconds model.secondsRemaining
-        , Html.div []
-            [ Html.button [ Events.onClick (Running True), Attrs.disabled model.running ] [ Html.text "Start" ]
-            , Html.button [ Events.onClick (Running False), Attrs.disabled (not model.running) ] [ Html.text "Stop" ]
-            , Html.button [ Events.onClick Reset ] [ Html.text "Reset" ]
+            , Html.text <| formatSeconds model.secondsRemaining
+            , Html.div []
+                [ Html.button [ Events.onClick (Running True), Attrs.disabled model.running ] [ Html.text "Start" ]
+                , Html.button [ Events.onClick (Running False), Attrs.disabled (not model.running) ] [ Html.text "Stop" ]
+                , Html.button [ Events.onClick Reset ] [ Html.text "Reset" ]
+                ]
             ]
         ]
 
