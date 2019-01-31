@@ -149,7 +149,7 @@ view model =
             , Html.div []
                 [ Html.button [ Events.onClick (Running True), Attrs.disabled model.running ] [ Html.text "Start" ]
                 , Html.button [ Events.onClick (Running False), Attrs.disabled (not model.running) ] [ Html.text "Stop" ]
-                , Html.button [ Events.onClick Reset ] [ Html.text "Reset" ]
+                , Html.button [ Events.onClick Reset, Attrs.disabled (model.secondsRemaining == periodToSeconds model.period) ] [ Html.text "Reset" ]
                 ]
             ]
         ]
