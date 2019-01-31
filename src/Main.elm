@@ -2,6 +2,7 @@ module Main exposing (main)
 
 import Browser
 import Html
+import Html.Attributes as Attrs
 import Html.Events as Events
 import Task
 import Time exposing (Posix)
@@ -24,7 +25,14 @@ type alias Model =
     { zone : Time.Zone
     , running : Bool
     , secondsRemaining : Int
+    , period : Period
     }
+
+
+type Period
+    = Pomodoro
+    | LongBreak
+    | ShortBreak
 
 
 
@@ -36,6 +44,7 @@ type Msg
     | Zone Time.Zone
     | Running Bool
     | Reset
+    | SwitchPeriod Period
 
 
 
@@ -44,7 +53,7 @@ type Msg
 
 init : () -> ( Model, Cmd Msg )
 init _ =
-    ( Model Time.utc False (25 * 60), Task.perform Zone Time.here )
+    ( Model Time.utc False (periodToSeconds Pomodoro) Pomodoro, Task.perform Zone Time.here )
 
 
 
@@ -63,7 +72,22 @@ update msg model =
             ( { model | running = state }, Cmd.none )
 
         Reset ->
-            ( { model | secondsRemaining = 25 * 60, running = False }, Cmd.none )
+            ( { model | secondsRemaining = periodToSeconds Pomodoro, running = False }, Cmd.none )
+
+        SwitchPeriod period ->
+            ( { model | period = period, running = True, secondsRemaining = periodToSeconds period }, Cmd.none )
+
+
+periodToSeconds period =
+    case period of
+        Pomodoro ->
+            25 * 60
+
+        ShortBreak ->
+            5 * 60
+
+        LongBreak ->
+            10 * 60
 
 
 
@@ -84,7 +108,36 @@ subscriptions model =
 
 view model =
     Html.div []
-        [ Html.text <| formatSeconds model.secondsRemaining
+        [ Html.div []
+            [ Html.label []
+                [ Html.input
+                    [ Attrs.type_ "radio"
+                    , Attrs.checked (model.period == Pomodoro)
+                    , Events.onClick (SwitchPeriod Pomodoro)
+                    ]
+                    []
+                , Html.text "Pomodoro"
+                ]
+            , Html.label []
+                [ Html.input
+                    [ Attrs.type_ "radio"
+                    , Attrs.checked (model.period == ShortBreak)
+                    , Events.onClick (SwitchPeriod ShortBreak)
+                    ]
+                    []
+                , Html.text "Short Break"
+                ]
+            , Html.label []
+                [ Html.input
+                    [ Attrs.type_ "radio"
+                    , Attrs.checked (model.period == LongBreak)
+                    , Events.onClick (SwitchPeriod LongBreak)
+                    ]
+                    []
+                , Html.text "Long Break"
+                ]
+            ]
+        , Html.text <| formatSeconds model.secondsRemaining
         , Html.div []
             [ Html.button [ Events.onClick (Running True) ] [ Html.text "Start" ]
             , Html.button [ Events.onClick (Running False) ] [ Html.text "Stop" ]
