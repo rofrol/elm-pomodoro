@@ -2,6 +2,7 @@ module Main exposing (main)
 
 import Browser
 import Html
+import Html.Events as Events
 import Task
 import Time exposing (Posix)
 
@@ -20,8 +21,7 @@ main =
 
 
 type alias Model =
-    { posix : Posix
-    , zone : Time.Zone
+    { zone : Time.Zone
     , running : Bool
     , secondsRemaining : Int
     }
@@ -35,6 +35,7 @@ type Msg
     = Tick Posix
     | Zone Time.Zone
     | Running Bool
+    | Reset
 
 
 
@@ -43,7 +44,7 @@ type Msg
 
 init : () -> ( Model, Cmd Msg )
 init _ =
-    ( Model (Time.millisToPosix 0) Time.utc True (25 * 60), Task.perform Zone Time.here )
+    ( Model Time.utc False (25 * 60), Task.perform Zone Time.here )
 
 
 
@@ -52,14 +53,17 @@ init _ =
 
 update msg model =
     case msg of
-        Tick newPosix ->
-            ( { model | posix = newPosix, secondsRemaining = model.secondsRemaining - 1 }, Cmd.none )
+        Tick _ ->
+            ( { model | secondsRemaining = model.secondsRemaining - 1 }, Cmd.none )
 
         Zone zone ->
             ( { model | zone = zone }, Cmd.none )
 
         Running state ->
             ( { model | running = state }, Cmd.none )
+
+        Reset ->
+            ( { model | secondsRemaining = 25 * 60, running = False }, Cmd.none )
 
 
 
@@ -80,20 +84,13 @@ subscriptions model =
 
 view model =
     Html.div []
-        [ Html.div []
-            [ Html.text <|
-                formatTime model.zone model.posix
+        [ Html.text <| formatSeconds model.secondsRemaining
+        , Html.div []
+            [ Html.button [ Events.onClick (Running True) ] [ Html.text "Start" ]
+            , Html.button [ Events.onClick (Running False) ] [ Html.text "Stop" ]
+            , Html.button [ Events.onClick Reset ] [ Html.text "Reset" ]
             ]
-        , Html.text <| formatSeconds model.secondsRemaining
         ]
-
-
-formatTime zone posix =
-    (String.padLeft 2 '0' <| String.fromInt <| Time.toHour zone posix)
-        ++ ":"
-        ++ (String.padLeft 2 '0' <| String.fromInt <| Time.toMinute zone posix)
-        ++ ":"
-        ++ (String.padLeft 2 '0' <| String.fromInt <| Time.toSecond zone posix)
 
 
 formatSeconds seconds =
