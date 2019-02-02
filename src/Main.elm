@@ -4,6 +4,7 @@ import Browser
 import Html
 import Html.Attributes as Attrs
 import Html.Events as Events
+import Notification
 import Task
 import Time exposing (Posix)
 
@@ -45,6 +46,7 @@ type Msg
     | Running Bool
     | Reset
     | SwitchPeriod Period
+    | NewNotification String
 
 
 
@@ -84,6 +86,9 @@ update msg model =
 
         SwitchPeriod period ->
             ( { model | period = period, running = True, secondsRemaining = periodToSeconds period }, Cmd.none )
+
+        NewNotification title ->
+            ( model, Notification.new title )
 
 
 periodToSeconds period =
@@ -160,6 +165,7 @@ view model =
                 , Html.button [ Events.onClick Reset, Attrs.disabled (model.secondsRemaining == periodToSeconds model.period) ] [ Html.text "Reset" ]
                 ]
             ]
+        , Html.button [ Events.onClick (NewNotification "Hello") ] [ Html.text "Send Hello" ]
         ]
 
 
