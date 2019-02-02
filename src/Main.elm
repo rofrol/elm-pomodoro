@@ -46,7 +46,6 @@ type Msg
     | Running Bool
     | Reset
     | SwitchPeriod Period
-    | NewNotification String
 
 
 
@@ -65,15 +64,11 @@ init _ =
 update msg model =
     case msg of
         Tick _ ->
-            let
-                model_ =
-                    if model.secondsRemaining == 0 then
-                        { model | running = False }
+            if model.secondsRemaining == 0 then
+                ( { model | running = False }, Notification.new "End of time" )
 
-                    else
-                        { model | secondsRemaining = model.secondsRemaining - 1 }
-            in
-            ( model_, Cmd.none )
+            else
+                ( { model | secondsRemaining = model.secondsRemaining - 1 }, Cmd.none )
 
         Zone zone ->
             ( { model | zone = zone }, Cmd.none )
@@ -86,9 +81,6 @@ update msg model =
 
         SwitchPeriod period ->
             ( { model | period = period, running = True, secondsRemaining = periodToSeconds period }, Cmd.none )
-
-        NewNotification title ->
-            ( model, Notification.new title )
 
 
 periodToSeconds period =
@@ -165,7 +157,6 @@ view model =
                 , Html.button [ Events.onClick Reset, Attrs.disabled (model.secondsRemaining == periodToSeconds model.period) ] [ Html.text "Reset" ]
                 ]
             ]
-        , Html.button [ Events.onClick (NewNotification "Hello") ] [ Html.text "Send Hello" ]
         ]
 
 
